@@ -1,17 +1,16 @@
 // assets/viewer.js
 // Module ES — compatible PDF.js v6
+// Les URLs sont injectées par wp_localize_script via window.revaaPdfViewer
 
-import * as pdfjsLib from './pdf.js/build/pdf.mjs';
-
-pdfjsLib.GlobalWorkerOptions.workerSrc =
-	new URL('./pdf.js/build/pdf.worker.mjs', import.meta.url).href;
+/* global revaaPdfViewer */
 
 /**
  * Rend toutes les pages d'un PDF dans un conteneur donné.
+ * @param {object} pdfjsLib
  * @param {HTMLElement} container
  * @param {string} pdfUrl
  */
-async function renderPdf(container, pdfUrl) {
+async function renderPdf(pdfjsLib, container, pdfUrl) {
 	const loadingEl = container.querySelector('.revaa-pdf-loading');
 
 	try {
@@ -52,7 +51,15 @@ async function renderPdf(container, pdfUrl) {
 /**
  * Initialise tous les blocs PDF de la page.
  */
-function initViewers() {
+async function initViewers() {
+	if (!window.revaaPdfViewer?.pdfJsUrl) {
+		console.error('[REVAA PDF Viewer] Configuration manquante (revaaPdfViewer).');
+		return;
+	}
+
+	const pdfjsLib = await import(window.revaaPdfViewer.pdfJsUrl);
+	pdfjsLib.GlobalWorkerOptions.workerSrc = window.revaaPdfViewer.pdfWorkerUrl;
+
 	const containers = document.querySelectorAll('.revaa-pdf-viewer-container');
 
 	containers.forEach((container) => {
@@ -73,7 +80,7 @@ function initViewers() {
 					document.body.style.overflow = 'hidden';
 					if (!loaded) {
 						loaded = true;
-						renderPdf(modal.querySelector('.revaa-pdf-modal-inner') || modal, pdfUrl);
+						renderPdf(pdfjsLib, modal.querySelector('.revaa-pdf-modal-inner') || modal, pdfUrl);
 					}
 				});
 			}
@@ -94,7 +101,7 @@ function initViewers() {
 				});
 			}
 		} else {
-			renderPdf(container, pdfUrl);
+			renderPdf(pdfjsLib, container, pdfUrl);
 		}
 	});
 }

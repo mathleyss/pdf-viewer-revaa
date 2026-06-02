@@ -58,6 +58,16 @@ class REVAA_PDF_Block {
 
 		wp_enqueue_script( 'revaa-pdfjs' );
 		wp_enqueue_script( 'revaa-pdf-viewer' );
+		wp_localize_script(
+			'revaa-pdf-viewer',
+			'revaaPdfViewer',
+			[
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'nonce'        => wp_create_nonce( 'revaa_pdf_nonce' ),
+				'pdfJsUrl'     => REVAA_PDF_VIEWER_URL . 'assets/pdf.js/build/pdf.mjs',
+				'pdfWorkerUrl' => REVAA_PDF_VIEWER_URL . 'assets/pdf.js/build/pdf.worker.mjs',
+			]
+		);
 	}
 
 	public static function enqueue_admin_assets( string $hook ) {
