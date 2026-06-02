@@ -40,6 +40,5 @@ tmp/
 build/
 
 # PDF.js (téléchargé séparément, voir assets/pdf.js/INSTALL.md)
-assets/pdf.js/*.mjs
-assets/pdf.js/*.js
+assets/pdf.js/build/
 !assets/pdf.js/INSTALL.md

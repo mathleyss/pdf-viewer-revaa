@@ -2,28 +2,34 @@
 
 ## Version utilisée
 
-**PDF.js 4.x** (dernière version stable au moment du développement).  
-Version recommandée : `pdfjs-4.10.38-dist` ou ultérieure.
+**PDF.js 6.0.227** — modules ES (`.mjs`).
 
 ## Procédure d'installation
 
-1. Télécharger le fichier `pdfjs-X.X.X-dist.zip` depuis :
-   https://github.com/mozilla/pdf.js/releases
+1. Télécharger le fichier `pdfjs-6.0.227-dist.zip` depuis :
+   https://github.com/mozilla/pdf.js/releases/tag/v6.0.227
 
-2. Extraire l'archive et copier les fichiers suivants dans ce dossier (`assets/pdf.js/`) :
+   ```bash
+   curl -L https://github.com/mozilla/pdf.js/releases/download/v6.0.227/pdfjs-6.0.227-dist.zip -o pdfjs.zip
+   ```
 
-   - `build/pdf.min.mjs` → `assets/pdf.js/pdf.min.mjs`
-   - `build/pdf.worker.min.mjs` → `assets/pdf.js/pdf.worker.min.mjs`
+2. Extraire et copier les fichiers dans `assets/pdf.js/build/` :
 
-   Pour les versions 3.x (si nécessaire) :
-   - `build/pdf.min.js` → `assets/pdf.js/pdf.min.js`
-   - `build/pdf.worker.min.js` → `assets/pdf.js/pdf.worker.min.js`
+   ```bash
+   unzip pdfjs.zip -d pdfjs-tmp/
+   mkdir -p assets/pdf.js/build/
+   cp pdfjs-tmp/build/pdf.mjs        assets/pdf.js/build/
+   cp pdfjs-tmp/build/pdf.worker.mjs assets/pdf.js/build/
+   rm -rf pdfjs-tmp/ pdfjs.zip
+   ```
 
-3. Ces fichiers ne sont **pas versionnés** (exclus par `.gitignore`).
-   Chaque développeur doit les télécharger manuellement.
+3. Vérifier la présence des deux fichiers :
+   - `assets/pdf.js/build/pdf.mjs`
+   - `assets/pdf.js/build/pdf.worker.mjs`
 
-## Remarque
+## Remarques
 
-Le fichier worker doit être servi depuis la même origine que le script principal.
-Le plugin configure automatiquement `pdfjsLib.GlobalWorkerOptions.workerSrc` via
-`wp_localize_script` (objet `revaaPdfViewerConfig.workerSrc`).
+- Ces fichiers ne sont **pas versionnés** (exclus par `.gitignore`).
+- PDF.js v6 utilise des modules ES — le plugin les charge avec `type="module"`.
+- Le chemin du worker est injecté via `wp_localize_script` (objet `revaaPdfViewer.pdfWorkerUrl`).
+- Les modules ES sont bloqués sur `file://` : tester impérativement en HTTP/HTTPS.
