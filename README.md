@@ -22,12 +22,24 @@ Plugin WordPress — Visionneuse PDF protégée avec bloc Gutenberg.
 Les fichiers PDF.js ne sont **pas inclus** dans ce dépôt.  
 Voir [`assets/pdf.js/INSTALL.md`](assets/pdf.js/INSTALL.md) pour les instructions détaillées.
 
+**Version requise : PDF.js 6.0.227** (modules ES `.mjs`)
+
 En résumé :
 
-1. Télécharger `pdfjs-X.X.X-dist.zip` depuis [github.com/mozilla/pdf.js/releases](https://github.com/mozilla/pdf.js/releases)
-2. Copier dans `assets/pdf.js/` :
-   - `build/pdf.min.mjs`
-   - `build/pdf.worker.min.mjs`
+```bash
+curl -L https://github.com/mozilla/pdf.js/releases/download/v6.0.227/pdfjs-6.0.227-dist.zip -o pdfjs.zip
+unzip pdfjs.zip -d pdfjs-tmp/
+mkdir -p assets/pdf.js/build/
+cp pdfjs-tmp/build/pdf.mjs        assets/pdf.js/build/
+cp pdfjs-tmp/build/pdf.worker.mjs assets/pdf.js/build/
+rm -rf pdfjs-tmp/ pdfjs.zip
+```
+
+Fichiers requis après installation :
+- `assets/pdf.js/build/pdf.mjs`
+- `assets/pdf.js/build/pdf.worker.mjs`
+
+> Les scripts sont chargés avec `type="module"` (implique `defer`). Tester en HTTP/HTTPS — les modules ES sont bloqués sur `file://`.
 
 ## Installation du plugin
 
