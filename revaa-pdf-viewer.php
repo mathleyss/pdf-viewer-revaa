@@ -24,6 +24,17 @@ add_action( 'plugins_loaded', function () {
 	REVAA_PDF_Block::init();
 } );
 
+add_action( 'init', function () {
+	$pdfjs_path = REVAA_PDF_VIEWER_PATH . 'assets/pdf.js/';
+	$pdfjs_url  = REVAA_PDF_VIEWER_URL . 'assets/pdf.js/';
+
+	if ( file_exists( $pdfjs_path . 'pdf.min.mjs' ) ) {
+		wp_register_script( 'revaa-pdfjs', $pdfjs_url . 'pdf.min.mjs', [], '4.10.38', true );
+	} elseif ( file_exists( $pdfjs_path . 'pdf.min.js' ) ) {
+		wp_register_script( 'revaa-pdfjs', $pdfjs_url . 'pdf.min.js', [], '3.11.174', true );
+	}
+} );
+
 register_activation_hook( __FILE__, function () {
 	REVAA_PDF_Endpoint::register_rewrite_rule();
 	flush_rewrite_rules();
