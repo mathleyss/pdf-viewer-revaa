@@ -93,3 +93,32 @@
 	color: #7d5a00;
 	font-size: 14px;
 }
+
+/* Responsive */
+@media (max-width: 600px) {
+	.revaa-pdf-modal {
+		padding: 12px 8px;
+	}
+	.revaa-pdf-modal-inner {
+		padding: 10px;
+	}
+	.revaa-pdf-open-modal {
+		width: 100%;
+		text-align: center;
+	}
+}
+
+/* Accessibilité : focus visible */
+.revaa-pdf-open-modal:focus-visible,
+.revaa-pdf-close-modal:focus-visible {
+	outline: 3px solid #005fcc;
+	outline-offset: 2px;
+}
+
+/* Impression : cacher la modale et le bouton */
+@media print {
+	.revaa-pdf-open-modal,
+	.revaa-pdf-modal {
+		display: none !important;
+	}
+}
