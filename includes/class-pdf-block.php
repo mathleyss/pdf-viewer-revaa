@@ -117,7 +117,7 @@ class REVAA_PDF_Block {
 	}
 
 	public static function render_block( array $attributes ): string {
-		$slug = $attributes['fileSlug'] ?? '';
+		$slug = sanitize_file_name( $attributes['fileSlug'] ?? '' );
 		if ( ! $slug ) {
 			return '';
 		}
@@ -126,9 +126,14 @@ class REVAA_PDF_Block {
 			return '<p class="revaa-pdf-login-required">Vous devez être connecté pour accéder à ce document.</p>';
 		}
 
+		$file_path = REVAA_PDF_Storage::get_private_dir() . $slug . '.pdf';
+		if ( ! file_exists( $file_path ) ) {
+			return '';
+		}
+
 		$url          = REVAA_PDF_Endpoint::get_pdf_url( $slug );
 		$display_mode = esc_attr( $attributes['displayMode'] ?? 'inline' );
-		$height       = intval( $attributes['height'] ?? 600 );
+		$height       = max( 300, min( 1200, intval( $attributes['height'] ?? 600 ) ) );
 
 		if ( $display_mode === 'modal' ) {
 			return sprintf(
