@@ -99,6 +99,12 @@ class REVAA_PDF_Block {
 		if ( $hook !== 'media_page_revaa-pdf-admin' ) {
 			return;
 		}
+		wp_enqueue_style(
+			'revaa-pdf-admin-style',
+			REVAA_PDF_VIEWER_URL . 'assets/admin.css',
+			[],
+			'1.0.0'
+		);
 		wp_enqueue_script(
 			'revaa-pdf-admin',
 			REVAA_PDF_VIEWER_URL . 'assets/admin.js',

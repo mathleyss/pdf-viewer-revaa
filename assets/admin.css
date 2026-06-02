@@ -1,0 +1,21 @@
+#revaa-upload-form {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin: 12px 0 24px;
+}
+
+#revaa-upload-message {
+	font-weight: 600;
+}
+
+.revaa-delete-btn {
+	color: #d63638 !important;
+	border-color: #d63638 !important;
+}
+
+.revaa-delete-btn:hover {
+	background: #d63638 !important;
+	color: #fff !important;
+}
