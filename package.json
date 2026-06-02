@@ -1,0 +1,13 @@
+{
+  "name": "revaa-pdf-viewer",
+  "version": "1.0.0",
+  "description": "Visionneuse PDF protégée avec bloc Gutenberg",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build blocks/pdf-viewer/index.js --output-path=build",
+    "start": "wp-scripts start blocks/pdf-viewer/index.js --output-path=build"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  }
+}

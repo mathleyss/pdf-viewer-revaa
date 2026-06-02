@@ -1,0 +1,17 @@
+{
+  "name": "revaa/pdf-viewer",
+  "title": "PDF Protégé",
+  "description": "Affiche un PDF privé via une visionneuse sécurisée.",
+  "category": "media",
+  "icon": "media-document",
+  "supports": { "html": false },
+  "attributes": {
+    "fileSlug": { "type": "string", "default": "" },
+    "fileName": { "type": "string", "default": "" },
+    "displayMode": { "type": "string", "default": "inline" },
+    "height": { "type": "number", "default": 600 }
+  },
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.css",
+  "style": "file:./style.css"
+}

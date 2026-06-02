@@ -1,0 +1,53 @@
+.revaa-pdf-block-placeholder {
+	background: #f0f0f0;
+	border: 2px dashed #b4b9be;
+	border-radius: 4px;
+	padding: 24px;
+	text-align: center;
+	min-height: 120px;
+}
+
+.revaa-pdf-block-placeholder h3 {
+	margin: 0 0 16px;
+	font-size: 16px;
+	color: #1e1e1e;
+}
+
+.revaa-pdf-upload-section {
+	margin-bottom: 16px;
+}
+
+.revaa-pdf-upload-section .revaa-pdf-error {
+	color: #d63638;
+	margin: 8px 0 0;
+	font-size: 12px;
+}
+
+.revaa-pdf-select-section {
+	margin-top: 16px;
+	text-align: left;
+	max-width: 360px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.revaa-pdf-block-preview {
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 20px;
+	text-align: center;
+}
+
+.revaa-pdf-block-icon {
+	font-size: 48px;
+	color: #c8295c;
+	display: block;
+	margin: 0 auto 8px;
+}
+
+.revaa-pdf-block-filename {
+	font-weight: 600;
+	margin: 0 0 12px;
+	word-break: break-all;
+}
