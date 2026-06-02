@@ -215,50 +215,6 @@ class REVAA_PDF_Block {
 				</table>
 			<?php endif; ?>
 		</div>
-		<script>
-		(function($) {
-			$('#revaa-upload-form').on('submit', function(e) {
-				e.preventDefault();
-				var formData = new FormData(this);
-				formData.append('action', 'revaa_upload_pdf');
-				$.ajax({
-					url: '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>',
-					type: 'POST',
-					data: formData,
-					processData: false,
-					contentType: false,
-					success: function(response) {
-						if (response.success) {
-							$('#revaa-upload-message').text('Fichier uploadé avec succès.').css('color', 'green');
-							setTimeout(function() { location.reload(); }, 1000);
-						} else {
-							$('#revaa-upload-message').text(response.data.error || 'Erreur.').css('color', 'red');
-						}
-					},
-					error: function() {
-						$('#revaa-upload-message').text('Erreur réseau.').css('color', 'red');
-					}
-				});
-			});
-
-			$(document).on('click', '.revaa-delete-btn', function() {
-				var filename = $(this).data('filename');
-				if (!confirm('Supprimer « ' + filename + ' » ?')) return;
-				var nonce = $(this).data('nonce');
-				$.post('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
-					action: 'revaa_delete_pdf',
-					nonce: nonce,
-					filename: filename
-				}, function(response) {
-					if (response.success) {
-						location.reload();
-					} else {
-						alert(response.data.error || 'Erreur.');
-					}
-				});
-			});
-		})(jQuery);
-		</script>
 		<?php
 	}
 }
