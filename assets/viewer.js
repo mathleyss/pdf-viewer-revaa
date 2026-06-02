@@ -1,136 +1,106 @@
-/* global pdfjsLib, revaaPdfViewerConfig */
-(function () {
-	'use strict';
+// assets/viewer.js
+// Module ES — compatible PDF.js v6
 
-	if (typeof pdfjsLib === 'undefined') {
-		console.error('REVAA PDF Viewer: PDF.js non chargé.');
-		return;
-	}
+import * as pdfjsLib from './pdf.js/build/pdf.mjs';
 
-	if (window.revaaPdfViewerConfig && revaaPdfViewerConfig.workerSrc) {
-		pdfjsLib.GlobalWorkerOptions.workerSrc = revaaPdfViewerConfig.workerSrc;
-	}
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+	new URL('./pdf.js/build/pdf.worker.mjs', import.meta.url).href;
 
-	function renderError(container, message) {
-		container.innerHTML = '<p class="revaa-pdf-error">' + message + '</p>';
-	}
+/**
+ * Rend toutes les pages d'un PDF dans un conteneur donné.
+ * @param {HTMLElement} container
+ * @param {string} pdfUrl
+ */
+async function renderPdf(container, pdfUrl) {
+	const loadingEl = container.querySelector('.revaa-pdf-loading');
 
-	async function renderInline(container, url) {
-		const canvas = container.querySelector('.revaa-pdf-canvas');
-		const loading = container.querySelector('.revaa-pdf-loading');
+	try {
+		const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
 
-		let pdfDoc;
-		try {
-			pdfDoc = await pdfjsLib.getDocument(url).promise;
-		} catch (e) {
-			renderError(container, 'Impossible de charger le document PDF.');
-			return;
-		}
-
-		if (loading) loading.remove();
+		if (loadingEl) loadingEl.remove();
 
 		for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
 			const page = await pdfDoc.getPage(pageNum);
 			const viewport = page.getViewport({ scale: 1.5 });
 
-			const pageCanvas = pageNum === 1 ? canvas : document.createElement('canvas');
-			pageCanvas.className = 'revaa-pdf-canvas';
-			if (pageNum > 1) container.appendChild(pageCanvas);
+			const canvas = document.createElement('canvas');
+			canvas.className = 'revaa-pdf-canvas';
+			canvas.height = viewport.height;
+			canvas.width = viewport.width;
 
-			pageCanvas.height = viewport.height;
-			pageCanvas.width = viewport.width;
+			canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
-			const ctx = pageCanvas.getContext('2d');
+			container.appendChild(canvas);
+
+			const ctx = canvas.getContext('2d');
 			await page.render({ canvasContext: ctx, viewport }).promise;
-
-			pageCanvas.addEventListener('contextmenu', function (e) {
-				e.preventDefault();
-			});
+		}
+	} catch (err) {
+		console.error('[REVAA PDF Viewer] Erreur de chargement :', err);
+		if (loadingEl) {
+			loadingEl.textContent = 'Impossible de charger le document.';
+			loadingEl.classList.add('revaa-pdf-error');
+		} else {
+			const errEl = document.createElement('p');
+			errEl.className = 'revaa-pdf-error';
+			errEl.textContent = 'Impossible de charger le document.';
+			container.appendChild(errEl);
 		}
 	}
+}
 
-	async function renderModal(container, url) {
-		const openBtn = container.querySelector('.revaa-pdf-open-modal');
-		const modal = container.querySelector('.revaa-pdf-modal');
-		const closeBtn = container.querySelector('.revaa-pdf-close-modal');
-		const canvas = container.querySelector('.revaa-pdf-canvas');
+/**
+ * Initialise tous les blocs PDF de la page.
+ */
+function initViewers() {
+	const containers = document.querySelectorAll('.revaa-pdf-viewer-container');
 
-		if (!openBtn || !modal || !canvas) return;
+	containers.forEach((container) => {
+		const pdfUrl = container.dataset.pdfUrl;
+		const displayMode = container.dataset.displayMode || 'inline';
 
-		let rendered = false;
+		if (!pdfUrl) return;
 
-		openBtn.addEventListener('click', async function () {
-			modal.removeAttribute('hidden');
-			document.body.style.overflow = 'hidden';
+		if (displayMode === 'modal') {
+			const openBtn = container.querySelector('.revaa-pdf-open-modal');
+			const modal = container.querySelector('.revaa-pdf-modal');
+			const closeBtn = container.querySelector('.revaa-pdf-close-modal');
+			let loaded = false;
 
-			if (!rendered) {
-				rendered = true;
-				let pdfDoc;
-				try {
-					pdfDoc = await pdfjsLib.getDocument(url).promise;
-				} catch (e) {
-					renderError(modal.querySelector('.revaa-pdf-modal-inner'), 'Impossible de charger le document PDF.');
-					return;
-				}
-
-				for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-					const page = await pdfDoc.getPage(pageNum);
-					const viewport = page.getViewport({ scale: 1.5 });
-
-					const pageCanvas = pageNum === 1 ? canvas : document.createElement('canvas');
-					pageCanvas.className = 'revaa-pdf-canvas';
-					if (pageNum > 1) modal.querySelector('.revaa-pdf-modal-inner').appendChild(pageCanvas);
-
-					pageCanvas.height = viewport.height;
-					pageCanvas.width = viewport.width;
-
-					const ctx = pageCanvas.getContext('2d');
-					await page.render({ canvasContext: ctx, viewport }).promise;
-
-					pageCanvas.addEventListener('contextmenu', function (e) {
-						e.preventDefault();
-					});
-				}
+			if (openBtn && modal) {
+				openBtn.addEventListener('click', () => {
+					modal.removeAttribute('hidden');
+					document.body.style.overflow = 'hidden';
+					if (!loaded) {
+						loaded = true;
+						renderPdf(modal.querySelector('.revaa-pdf-modal-inner') || modal, pdfUrl);
+					}
+				});
 			}
-		});
 
-		if (closeBtn) {
-			closeBtn.addEventListener('click', function () {
-				modal.setAttribute('hidden', '');
-				document.body.style.overflow = '';
-			});
+			if (closeBtn && modal) {
+				closeBtn.addEventListener('click', () => {
+					modal.setAttribute('hidden', '');
+					document.body.style.overflow = '';
+				});
+			}
+
+			if (modal) {
+				modal.addEventListener('click', (e) => {
+					if (e.target === modal) {
+						modal.setAttribute('hidden', '');
+						document.body.style.overflow = '';
+					}
+				});
+			}
+		} else {
+			renderPdf(container, pdfUrl);
 		}
+	});
+}
 
-		modal.addEventListener('click', function (e) {
-			if (e.target === modal) {
-				modal.setAttribute('hidden', '');
-				document.body.style.overflow = '';
-			}
-		});
-	}
-
-	function initViewers() {
-		const containers = document.querySelectorAll('.revaa-pdf-viewer-container');
-		containers.forEach(function (container) {
-			const url = container.dataset.pdfUrl;
-			const mode = container.dataset.displayMode || 'inline';
-
-			if (!url) {
-				renderError(container, 'URL du document manquante.');
-				return;
-			}
-
-			if (mode === 'modal') {
-				renderModal(container, url);
-			} else {
-				renderInline(container, url);
-			}
-		});
-	}
-
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initViewers);
-	} else {
-		initViewers();
-	}
-})();
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initViewers);
+} else {
+	initViewers();
+}
