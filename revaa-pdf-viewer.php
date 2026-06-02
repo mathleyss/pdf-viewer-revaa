@@ -25,15 +25,18 @@ add_action( 'plugins_loaded', function () {
 } );
 
 add_action( 'init', function () {
-	$pdfjs_path = REVAA_PDF_VIEWER_PATH . 'assets/pdf.js/';
-	$pdfjs_url  = REVAA_PDF_VIEWER_URL . 'assets/pdf.js/';
+	$pdfjs_url = REVAA_PDF_VIEWER_URL . 'assets/pdf.js/build/';
 
-	if ( file_exists( $pdfjs_path . 'pdf.min.mjs' ) ) {
-		wp_register_script( 'revaa-pdfjs', $pdfjs_url . 'pdf.min.mjs', [], '4.10.38', true );
-	} elseif ( file_exists( $pdfjs_path . 'pdf.min.js' ) ) {
-		wp_register_script( 'revaa-pdfjs', $pdfjs_url . 'pdf.min.js', [], '3.11.174', true );
-	}
+	wp_register_script( 'revaa-pdfjs', $pdfjs_url . 'pdf.mjs', [], '6.0.227', true );
+	wp_register_script( 'revaa-pdf-viewer', REVAA_PDF_VIEWER_URL . 'assets/viewer.js', [ 'revaa-pdfjs' ], '1.0.0', true );
 } );
+
+add_filter( 'script_loader_tag', function ( string $tag, string $handle ): string {
+	if ( in_array( $handle, [ 'revaa-pdfjs', 'revaa-pdf-viewer' ], true ) ) {
+		return str_replace( '<script ', '<script type="module" ', $tag );
+	}
+	return $tag;
+}, 10, 2 );
 
 register_activation_hook( __FILE__, function () {
 	REVAA_PDF_Endpoint::register_rewrite_rule();

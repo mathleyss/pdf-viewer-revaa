@@ -56,43 +56,8 @@ class REVAA_PDF_Block {
 			return;
 		}
 
-		$pdfjs_path = REVAA_PDF_VIEWER_PATH . 'assets/pdf.js/';
-		$pdfjs_url  = REVAA_PDF_VIEWER_URL . 'assets/pdf.js/';
-
-		if ( file_exists( $pdfjs_path . 'pdf.min.mjs' ) ) {
-			wp_enqueue_script(
-				'revaa-pdfjs',
-				$pdfjs_url . 'pdf.min.mjs',
-				[],
-				'5.0.0',
-				true
-			);
-		} elseif ( file_exists( $pdfjs_path . 'pdf.min.js' ) ) {
-			wp_enqueue_script(
-				'revaa-pdfjs',
-				$pdfjs_url . 'pdf.min.js',
-				[],
-				'3.11.174',
-				true
-			);
-		}
-
-		wp_enqueue_script(
-			'revaa-pdf-viewer',
-			REVAA_PDF_VIEWER_URL . 'assets/viewer.js',
-			[ 'revaa-pdfjs' ],
-			'1.0.0',
-			true
-		);
-		wp_localize_script(
-			'revaa-pdf-viewer',
-			'revaaPdfViewerConfig',
-			[
-				'workerSrc' => file_exists( $pdfjs_path . 'pdf.worker.min.mjs' )
-					? $pdfjs_url . 'pdf.worker.min.mjs'
-					: $pdfjs_url . 'pdf.worker.min.js',
-			]
-		);
+		wp_enqueue_script( 'revaa-pdfjs' );
+		wp_enqueue_script( 'revaa-pdf-viewer' );
 	}
 
 	public static function enqueue_admin_assets( string $hook ) {
