@@ -1,63 +1,58 @@
 # REVAA PDF Viewer
 
-Plugin WordPress — Visionneuse PDF protégée avec bloc Gutenberg.
+Plugin WordPress — Accès sécurisé à des PDFs via bouton Gutenberg.
 
 ## Fonctionnalités
 
 - Bloc Gutenberg **PDF Protégé** (catégorie *Médias*)
-- Affichage via PDF.js (rendu canvas, sans bouton de téléchargement natif)
-- Deux modes : **inline** (intégré à la page) et **modale** (fenêtre superposée)
+- Upload de PDF avec champ "Nom du document" (label personnalisé)
+- Sélecteur de fichiers déjà uploadés avec leurs noms lisibles
+- Bouton `📄 Nom du document` en frontend → clic → PDF s'ouvre dans un nouvel onglet
 - Accès réservé aux utilisateurs connectés
 - Stockage des PDFs dans un dossier privé (`wp-content/revaa-private-pdfs/`) protégé par `.htaccess`
-- Page d'administration dans *Médias → PDFs Protégés*
+- Page d'administration dans *Médias → PDFs Protégés* avec renommage inline
+- Labels stockés dans `revaa-private-pdfs/meta.json`
 
 ## Prérequis
 
 - WordPress 6.0+
 - PHP 8.0+
-- PDF.js (voir ci-dessous)
+- Node.js (pour le build)
 
-## Installation de PDF.js
-
-Les fichiers PDF.js ne sont **pas inclus** dans ce dépôt.  
-Voir [`assets/pdf.js/INSTALL.md`](assets/pdf.js/INSTALL.md) pour les instructions détaillées.
-
-**Version requise : PDF.js 6.0.227** (modules ES `.mjs`)
-
-En résumé :
+## Développement
 
 ```bash
-curl -L https://github.com/mozilla/pdf.js/releases/download/v6.0.227/pdfjs-6.0.227-dist.zip -o pdfjs.zip
-unzip pdfjs.zip -d pdfjs-tmp/
-mkdir -p assets/pdf.js/build/
-cp pdfjs-tmp/build/pdf.mjs        assets/pdf.js/build/
-cp pdfjs-tmp/build/pdf.worker.mjs assets/pdf.js/build/
-rm -rf pdfjs-tmp/ pdfjs.zip
+npm install        # installe les dépendances et télécharge PDF.js automatiquement
+npm run build      # compile le bloc Gutenberg dans build/
 ```
 
-Fichiers requis après installation :
-- `assets/pdf.js/build/pdf.mjs`
-- `assets/pdf.js/build/pdf.worker.mjs`
+Le script `postinstall` télécharge automatiquement PDF.js v6.0.227 dans `assets/pdf.js/build/`.
 
-> Les scripts sont chargés avec `type="module"` (implique `defer`). Tester en HTTP/HTTPS — les modules ES sont bloqués sur `file://`.
+## Déploiement
 
-## Installation du plugin
+```bash
+bash scripts/build-zip.sh
+```
 
-1. Cloner ce dépôt dans `wp-content/plugins/revaa-pdf-viewer/`
-2. Installer PDF.js (voir ci-dessus)
-3. (Optionnel) Compiler le bloc Gutenberg :
-   ```bash
-   npm install
-   npm run build
-   ```
-4. Activer le plugin dans *Extensions → Extensions installées*
+Cette commande :
+1. Télécharge PDF.js si nécessaire
+2. Compile le bloc Gutenberg
+3. Crée `revaa-pdf-viewer.zip` dans le dossier **parent** du plugin
+
+Ensuite :
+1. Déposer le zip sur o2switch
+2. Extraire dans `wp-content/plugins/`
+3. Activer le plugin dans *Extensions → Extensions installées*
+4. Flusher les permaliens (*Réglages → Permaliens → Enregistrer*)
+5. Exclure `/revaa-pdf/` du cache LiteSpeed
 
 ## Utilisation
 
 1. Dans l'éditeur Gutenberg, insérer le bloc **PDF Protégé**
-2. Uploader un nouveau PDF ou sélectionner un fichier existant
-3. Choisir le mode d'affichage (inline / modale) et la hauteur dans le panneau latéral
-4. Publier la page — le PDF est visible uniquement pour les utilisateurs connectés
+2. Saisir un nom de document, puis uploader un PDF ou sélectionner un fichier existant
+3. Un aperçu du bouton s'affiche dans l'éditeur
+4. Le label est modifiable dans le panneau latéral (Paramètres du PDF)
+5. Publier la page — le bouton est visible uniquement pour les utilisateurs connectés
 
 ## Sécurité
 
