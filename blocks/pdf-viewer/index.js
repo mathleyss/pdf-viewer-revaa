@@ -1,25 +1,24 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, SelectControl, RangeControl, Button } from '@wordpress/components';
+import { PanelBody, TextControl, Button } from '@wordpress/components';
 import { useState, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 registerBlockType( 'revaa/pdf-viewer', {
 	edit: ( { attributes, setAttributes } ) => {
-		const { fileSlug, fileName, displayMode, height } = attributes;
+		const { fileSlug, fileName, label } = attributes;
 		const blockProps = useBlockProps();
 
 		const [ files, setFiles ] = useState( [] );
 		const [ uploading, setUploading ] = useState( false );
 		const [ uploadError, setUploadError ] = useState( '' );
+		const [ labelInput, setLabelInput ] = useState( label );
 		const fileInputRef = useRef( null );
 
 		useEffect( () => {
 			if ( ! window.revaaPdfViewer ) return;
 			fetch( revaaPdfViewer.filesEndpoint, {
-				headers: {
-					'X-WP-Nonce': revaaPdfViewer.restNonce,
-				},
+				headers: { 'X-WP-Nonce': revaaPdfViewer.restNonce },
 			} )
 				.then( ( res ) => res.json() )
 				.then( ( data ) => {
@@ -38,11 +37,9 @@ registerBlockType( 'revaa/pdf-viewer', {
 			formData.append( 'action', 'revaa_upload_pdf' );
 			formData.append( 'nonce', revaaPdfViewer.nonce );
 			formData.append( 'pdf_file', file );
+			formData.append( 'label', labelInput || file.name.replace( /\.pdf$/i, '' ) );
 
-			fetch( revaaPdfViewer.ajaxUrl, {
-				method: 'POST',
-				body: formData,
-			} )
+			fetch( revaaPdfViewer.ajaxUrl, { method: 'POST', body: formData } )
 				.then( ( res ) => res.json() )
 				.then( ( data ) => {
 					setUploading( false );
@@ -50,11 +47,10 @@ registerBlockType( 'revaa/pdf-viewer', {
 						setAttributes( {
 							fileSlug: data.data.slug,
 							fileName: data.data.filename,
+							label:    data.data.label,
 						} );
 					} else {
-						setUploadError(
-							data.data?.error || __( 'Erreur lors de l\'upload.', 'revaa-pdf-viewer' )
-						);
+						setUploadError( data.data || __( "Erreur lors de l'upload.", 'revaa-pdf-viewer' ) );
 					}
 				} )
 				.catch( () => {
@@ -63,11 +59,44 @@ registerBlockType( 'revaa/pdf-viewer', {
 				} );
 		}
 
+		function handleExistingSelect( e ) {
+			const slug = e.target.value;
+			if ( ! slug ) return;
+			const found = files.find( ( f ) => f.slug === slug );
+			if ( found ) {
+				setAttributes( {
+					fileSlug: found.slug,
+					fileName: found.name,
+					label:    found.label,
+				} );
+			}
+		}
+
+		function saveLabel( newLabel ) {
+			if ( ! newLabel || ! fileSlug ) return;
+			setAttributes( { label: newLabel } );
+			const formData = new FormData();
+			formData.append( 'action', 'revaa_update_pdf_label' );
+			formData.append( 'nonce', revaaPdfViewer.nonce );
+			formData.append( 'slug', fileSlug );
+			formData.append( 'label', newLabel );
+			fetch( revaaPdfViewer.ajaxUrl, { method: 'POST', body: formData } ).catch( () => {} );
+		}
+
 		if ( ! fileSlug ) {
 			return (
 				<div { ...blockProps }>
 					<div className="revaa-pdf-block-placeholder">
 						<h3>{ __( 'PDF Protégé', 'revaa-pdf-viewer' ) }</h3>
+
+						<div className="revaa-pdf-label-field">
+							<TextControl
+								label={ __( 'Nom du document', 'revaa-pdf-viewer' ) }
+								value={ labelInput }
+								onChange={ setLabelInput }
+								placeholder={ __( 'Ex : Guide du bénévole', 'revaa-pdf-viewer' ) }
+							/>
+						</div>
 
 						<div className="revaa-pdf-upload-section">
 							<Button
@@ -94,24 +123,14 @@ registerBlockType( 'revaa/pdf-viewer', {
 						{ files.length > 0 && (
 							<div className="revaa-pdf-select-section">
 								<p>{ __( 'Ou sélectionner un fichier existant :', 'revaa-pdf-viewer' ) }</p>
-								<SelectControl
-									value=""
-									options={ [
-										{ label: __( '— Choisir —', 'revaa-pdf-viewer' ), value: '' },
-										...files.map( ( f ) => ( {
-											label: f.name,
-											value: f.slug,
-										} ) ),
-									] }
-									onChange={ ( slug ) => {
-										if ( ! slug ) return;
-										const found = files.find( ( f ) => f.slug === slug );
-										setAttributes( {
-											fileSlug: slug,
-											fileName: found ? found.name : slug + '.pdf',
-										} );
-									} }
-								/>
+								<select onChange={ handleExistingSelect } defaultValue="">
+									<option value="">{ __( '— Choisir —', 'revaa-pdf-viewer' ) }</option>
+									{ files.map( ( f ) => (
+										<option key={ f.slug } value={ f.slug }>
+											{ f.label }
+										</option>
+									) ) }
+								</select>
 							</div>
 						) }
 					</div>
@@ -123,37 +142,28 @@ registerBlockType( 'revaa/pdf-viewer', {
 			<>
 				<InspectorControls>
 					<PanelBody title={ __( 'Paramètres du PDF', 'revaa-pdf-viewer' ) }>
-						<SelectControl
-							label={ __( 'Mode d\'affichage', 'revaa-pdf-viewer' ) }
-							value={ displayMode }
-							options={ [
-								{ label: __( 'Inline', 'revaa-pdf-viewer' ), value: 'inline' },
-								{ label: __( 'Modale', 'revaa-pdf-viewer' ), value: 'modal' },
-							] }
-							onChange={ ( val ) => setAttributes( { displayMode: val } ) }
+						<TextControl
+							label={ __( 'Nom du document', 'revaa-pdf-viewer' ) }
+							value={ label }
+							onChange={ ( val ) => saveLabel( val ) }
 						/>
-						{ displayMode === 'inline' && (
-							<RangeControl
-								label={ __( 'Hauteur (px)', 'revaa-pdf-viewer' ) }
-								value={ height }
-								min={ 300 }
-								max={ 1200 }
-								onChange={ ( val ) => setAttributes( { height: val } ) }
-							/>
-						) }
 					</PanelBody>
 				</InspectorControls>
 
 				<div { ...blockProps }>
 					<div className="revaa-pdf-block-preview">
-						<span className="revaa-pdf-block-icon dashicons dashicons-media-document"></span>
-						<p className="revaa-pdf-block-filename">{ fileName || fileSlug }</p>
-						<Button
-							variant="secondary"
-							onClick={ () => setAttributes( { fileSlug: '', fileName: '' } ) }
-						>
-							{ __( 'Changer de fichier', 'revaa-pdf-viewer' ) }
-						</Button>
+						<a className="revaa-pdf-open-btn" href="#" onClick={ ( e ) => e.preventDefault() }>
+							<span className="revaa-pdf-icon">📄</span>
+							<span className="revaa-pdf-label">{ label || fileSlug }</span>
+						</a>
+						<div style={ { marginTop: '12px' } }>
+							<Button
+								variant="secondary"
+								onClick={ () => setAttributes( { fileSlug: '', fileName: '', label: '' } ) }
+							>
+								{ __( 'Changer de fichier', 'revaa-pdf-viewer' ) }
+							</Button>
+						</div>
 					</div>
 				</div>
 			</>
