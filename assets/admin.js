@@ -28,7 +28,7 @@
 					setTimeout(function () { location.reload(); }, 1200);
 				} else {
 					$msg.text(
-						(response.data && response.data.error) || 'Erreur lors de l\'upload.'
+						(response.data && response.data.error) || response.data || "Erreur lors de l'upload."
 					).css('color', '#d63638');
 				}
 			},
@@ -36,6 +36,46 @@
 				$btn.prop('disabled', false).text('Uploader');
 				$msg.text('Erreur réseau.').css('color', '#d63638');
 			},
+		});
+	});
+
+	$(document).on('click', '.revaa-rename-btn', function () {
+		var $row = $(this).closest('tr');
+		$row.find('.revaa-rename-form').show();
+		$row.find('.revaa-rename-btn').hide();
+	});
+
+	$(document).on('click', '.revaa-rename-cancel', function () {
+		var $row = $(this).closest('tr');
+		$row.find('.revaa-rename-form').hide();
+		$row.find('.revaa-rename-btn').show();
+	});
+
+	$(document).on('click', '.revaa-rename-save', function () {
+		var $btn = $(this);
+		var $row = $btn.closest('tr');
+		var slug = $row.data('slug');
+		var label = $row.find('.revaa-rename-input').val().trim();
+
+		if (!label) return;
+
+		$btn.prop('disabled', true).text('Enregistrement…');
+
+		$.post(revaaPdfAdmin.ajaxUrl, {
+			action: 'revaa_update_pdf_label',
+			nonce: revaaPdfAdmin.nonce,
+			slug: slug,
+			label: label,
+		}, function (response) {
+			if (response.success) {
+				$row.find('.revaa-file-label').text(label);
+				$row.find('.revaa-rename-form').hide();
+				$row.find('.revaa-rename-btn').show();
+				$row.find('.revaa-rename-input').val(label);
+			} else {
+				alert('Erreur lors du renommage.');
+			}
+			$btn.prop('disabled', false).text('Enregistrer');
 		});
 	});
 
