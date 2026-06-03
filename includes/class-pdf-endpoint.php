@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class REVAA_PDF_Endpoint {
 
 	public static function init() {
-		self::register_rewrite_rule();
+		add_action( 'init', [ __CLASS__, 'register_rewrite_rule' ] );
 		add_filter( 'query_vars', [ __CLASS__, 'add_query_vars' ] );
 		add_action( 'template_redirect', [ __CLASS__, 'handle_request' ] );
 	}

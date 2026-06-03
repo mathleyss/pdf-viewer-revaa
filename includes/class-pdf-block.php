@@ -18,7 +18,7 @@ class REVAA_PDF_Block {
 			return;
 		}
 		register_block_type(
-			REVAA_PDF_VIEWER_PATH . 'blocks/pdf-viewer/block.json',
+			REVAA_PDF_VIEWER_PATH . 'build',
 			[
 				'render_callback' => [ __CLASS__, 'render_block' ],
 			]
