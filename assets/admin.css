@@ -1,13 +1,46 @@
 #revaa-upload-form {
 	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	margin: 12px 0 24px;
+	max-width: 500px;
+}
+
+.revaa-upload-field {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.revaa-upload-field label {
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.revaa-upload-field input[type="text"] {
+	max-width: 300px;
+}
+
+.revaa-upload-actions {
+	display: flex;
 	align-items: center;
 	gap: 12px;
 	flex-wrap: wrap;
-	margin: 12px 0 24px;
 }
 
 #revaa-upload-message {
 	font-weight: 600;
+}
+
+.revaa-file-label {
+	font-size: 14px;
+}
+
+.revaa-rename-form {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-wrap: wrap;
 }
 
 .revaa-delete-btn {
@@ -18,4 +51,8 @@
 .revaa-delete-btn:hover {
 	background: #d63638 !important;
 	color: #fff !important;
+}
+
+.revaa-rename-btn {
+	margin-right: 4px !important;
 }
