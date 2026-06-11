@@ -92,6 +92,14 @@ async function initViewers() {
 				});
 			}
 
+			const overlay = container.querySelector('.revaa-pdf-modal-overlay');
+			if (overlay && modal) {
+				overlay.addEventListener('click', () => {
+					modal.setAttribute('hidden', '');
+					document.body.style.overflow = '';
+				});
+			}
+
 			if (modal) {
 				modal.addEventListener('click', (e) => {
 					if (e.target === modal) {
