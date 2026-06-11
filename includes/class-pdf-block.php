@@ -105,6 +105,9 @@ class REVAA_PDF_Block {
 		$safe_label = esc_html( $label ?: $slug );
 		$safe_url   = esc_url( $url );
 
+		// DEBUG TEMPORAIRE — à retirer après diagnostic
+		error_log( '[REVAA DEBUG] slug=' . $slug . ' url=' . $url . ' safe_url=' . $safe_url );
+
 		return sprintf(
 			'<div class="revaa-pdf-viewer-container" data-pdf-url="%1$s" data-display-mode="modal">
 				<button type="button" class="revaa-pdf-open-modal revaa-pdf-open-btn">
