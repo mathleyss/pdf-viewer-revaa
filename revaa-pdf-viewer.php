@@ -2,7 +2,7 @@
 /**
  * Plugin Name: REVAA PDF Viewer
  * Description: Visionneuse PDF protégée avec bloc Gutenberg
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Mathieu Leyssene
  * Author URI: https://mathieu-leyssene.fr
  */
