@@ -61,29 +61,44 @@
 	z-index: 1;
 	background: #fff;
 	border-radius: 6px;
-	max-width: min(90vw, 900px);
-	max-height: 90vh;
+	max-width: 90vw;
+	max-height: 92vh;
+	width: 100%;
 	overflow-y: auto;
 	padding: 1.5em;
 	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 	user-select: none;
 }
 
+@media (min-width: 768px) {
+	.revaa-pdf-modal-content {
+		max-width: 800px;
+		max-height: 95vh;
+	}
+}
+
 .revaa-pdf-close-modal {
-	position: absolute;
-	top: 0.5em;
-	right: 0.75em;
-	background: none;
+	position: fixed;
+	top: 16px;
+	right: 16px;
+	z-index: 100001;
+	width: 40px;
+	height: 40px;
+	background-color: #0073aa;
+	color: #fff;
 	border: none;
+	border-radius: 8px;
 	font-size: 1.5rem;
 	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	cursor: pointer;
-	color: #333;
-	padding: 0.25em;
+	transition: background-color 0.2s ease;
 }
 
 .revaa-pdf-close-modal:hover {
-	color: #000;
+	background-color: #005a87;
 }
 
 .revaa-pdf-modal-inner {
