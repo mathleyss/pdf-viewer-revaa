@@ -14,8 +14,6 @@ async function renderPdf(pdfjsLib, container, pdfUrl) {
 	const loadingEl = container.querySelector('.revaa-pdf-loading');
 
 	try {
-		// DEBUG TEMPORAIRE — à retirer après diagnostic
-		console.log('[REVAA DEBUG] pdfUrl =', JSON.stringify(pdfUrl));
 		const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
 
 		if (loadingEl) loadingEl.remove();
