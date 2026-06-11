@@ -65,8 +65,12 @@
 	pointer-events: none;
 }
 
-.revaa-pdf-block-preview .revaa-pdf-open-btn .revaa-pdf-label,
-.revaa-pdf-block-preview .revaa-pdf-open-btn .revaa-pdf-icon {
+/* Écrase le thème Astra : .editor-styles-wrapper a { color: var(--ast-global-color-0) } */
+.editor-styles-wrapper .revaa-pdf-block-preview .revaa-pdf-open-btn,
+.editor-styles-wrapper .revaa-pdf-block-preview .revaa-pdf-open-btn:hover,
+.editor-styles-wrapper .revaa-pdf-block-preview .revaa-pdf-open-btn:visited,
+.editor-styles-wrapper .revaa-pdf-block-preview .revaa-pdf-open-btn .revaa-pdf-label,
+.editor-styles-wrapper .revaa-pdf-block-preview .revaa-pdf-open-btn .revaa-pdf-icon {
 	color: #fff !important;
 }
 
