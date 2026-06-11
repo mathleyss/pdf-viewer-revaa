@@ -108,13 +108,13 @@ class REVAA_PDF_Block {
 		return sprintf(
 			'<div class="revaa-pdf-viewer-container" data-pdf-url="%1$s" data-display-mode="modal">
 				<button type="button" class="revaa-pdf-open-modal revaa-pdf-open-btn">
-					<span class="revaa-pdf-icon">📄</span>
+					<span class="revaa-pdf-icon"></span>
 					<span class="revaa-pdf-label">%2$s</span>
 				</button>
 				<div class="revaa-pdf-modal" hidden>
 					<div class="revaa-pdf-modal-overlay"></div>
+					<button type="button" class="revaa-pdf-close-modal" aria-label="Fermer">&times;</button>
 					<div class="revaa-pdf-modal-content">
-						<button type="button" class="revaa-pdf-close-modal" aria-label="Fermer">&times;</button>
 						<div class="revaa-pdf-modal-inner">
 							<p class="revaa-pdf-loading">Chargement du document…</p>
 						</div>
