@@ -210,7 +210,7 @@ class REVAA_PDF_Block {
 						<?php foreach ( $files as $file ) : ?>
 							<tr data-slug="<?php echo esc_attr( $file['slug'] ); ?>">
 								<td>
-									<strong class="revaa-file-label"><?php echo esc_html( 'Nom : ' . $file['label'] ); ?></strong>
+									<strong class="revaa-file-label"><?php echo esc_html( $file['label'] ); ?></strong>
 									<br><small style="color:#888;"><?php echo esc_html( 'Fichier : ' . $file['name'] ); ?></small>
 									<br><small style="color:#888;"><?php echo esc_html( 'Slug : ' . $file['slug'] ); ?></small>
 									<div class="revaa-rename-form" style="display:none;margin-top:6px;">
