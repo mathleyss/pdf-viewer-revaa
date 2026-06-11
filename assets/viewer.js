@@ -14,7 +14,7 @@ async function renderPdf(pdfjsLib, container, pdfUrl) {
 	const loadingEl = container.querySelector('.revaa-pdf-loading');
 
 	try {
-		const pdfDoc = await pdfjsLib.getDocument(pdfUrl).promise;
+		const pdfDoc = await pdfjsLib.getDocument({ url: pdfUrl }).promise;
 
 		if (loadingEl) loadingEl.remove();
 
@@ -87,6 +87,14 @@ async function initViewers() {
 
 			if (closeBtn && modal) {
 				closeBtn.addEventListener('click', () => {
+					modal.setAttribute('hidden', '');
+					document.body.style.overflow = '';
+				});
+			}
+
+			const overlay = container.querySelector('.revaa-pdf-modal-overlay');
+			if (overlay && modal) {
+				overlay.addEventListener('click', () => {
 					modal.setAttribute('hidden', '');
 					document.body.style.overflow = '';
 				});

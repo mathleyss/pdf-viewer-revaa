@@ -10,6 +10,9 @@ class REVAA_PDF_Block {
 		add_action( 'rest_api_init', [ __CLASS__, 'register_rest_routes' ] );
 		add_action( 'admin_menu', [ __CLASS__, 'add_admin_page' ] );
 		add_action( 'admin_enqueue_scripts', [ __CLASS__, 'enqueue_admin_assets' ] );
+		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_frontend_assets' ] );
+		add_filter( 'script_loader_tag', [ __CLASS__, 'add_module_type_to_viewer' ], 10, 3 );
+		add_action( 'enqueue_block_editor_assets', [ __CLASS__, 'enqueue_editor_assets' ] );
 	}
 
 	public static function register_block() {
@@ -22,7 +25,9 @@ class REVAA_PDF_Block {
 				'render_callback' => [ __CLASS__, 'render_block' ],
 			]
 		);
+	}
 
+	public static function enqueue_editor_assets() {
 		wp_localize_script(
 			'revaa-pdf-viewer-editor-script',
 			'revaaPdfViewer',
@@ -53,6 +58,34 @@ class REVAA_PDF_Block {
 		return new WP_REST_Response( REVAA_PDF_Storage::get_files(), 200 );
 	}
 
+	public static function enqueue_frontend_assets() {
+		if ( ! has_block( 'revaa/pdf-viewer' ) ) {
+			return;
+		}
+		wp_enqueue_script(
+			'revaa-pdf-viewer',
+			REVAA_PDF_VIEWER_URL . 'assets/viewer.js',
+			[],
+			'1.1.0',
+			true
+		);
+		wp_localize_script(
+			'revaa-pdf-viewer',
+			'revaaPdfViewer',
+			[
+				'pdfJsUrl'     => REVAA_PDF_VIEWER_URL . 'assets/pdf.js/build/pdf.mjs',
+				'pdfWorkerUrl' => REVAA_PDF_VIEWER_URL . 'assets/pdf.js/build/pdf.worker.mjs',
+			]
+		);
+	}
+
+	public static function add_module_type_to_viewer( string $tag, string $handle, string $src ): string {
+		if ( $handle !== 'revaa-pdf-viewer' ) {
+			return $tag;
+		}
+		return str_replace( '<script ', '<script type="module" ', $tag );
+	}
+
 	public static function render_block( array $attributes ): string {
 		$slug  = $attributes['fileSlug'] ?? '';
 		$label = $attributes['label'] ?? '';
@@ -73,11 +106,20 @@ class REVAA_PDF_Block {
 		$safe_url   = esc_url( $url );
 
 		return sprintf(
-			'<div class="revaa-pdf-button-wrapper">
-				<a href="%s" target="_blank" rel="noopener noreferrer" class="revaa-pdf-open-btn">
-					<span class="revaa-pdf-icon">📄</span>
-					<span class="revaa-pdf-label">%s</span>
-				</a>
+			'<div class="revaa-pdf-viewer-container" data-pdf-url="%1$s" data-display-mode="modal">
+				<button type="button" class="revaa-pdf-open-modal revaa-pdf-open-btn">
+					<span class="revaa-pdf-icon"></span>
+					<span class="revaa-pdf-label">%2$s</span>
+				</button>
+				<div class="revaa-pdf-modal" hidden>
+					<div class="revaa-pdf-modal-overlay"></div>
+					<button type="button" class="revaa-pdf-close-modal" aria-label="Fermer">&times;</button>
+					<div class="revaa-pdf-modal-content">
+						<div class="revaa-pdf-modal-inner">
+							<p class="revaa-pdf-loading">Chargement du document…</p>
+						</div>
+					</div>
+				</div>
 			</div>',
 			$safe_url,
 			$safe_label
@@ -166,7 +208,8 @@ class REVAA_PDF_Block {
 							<tr data-slug="<?php echo esc_attr( $file['slug'] ); ?>">
 								<td>
 									<strong class="revaa-file-label"><?php echo esc_html( $file['label'] ); ?></strong>
-									<br><small style="color:#888;"><?php echo esc_html( $file['name'] ); ?></small>
+									<br><small style="color:#888;"><?php echo esc_html( 'Fichier : ' . $file['name'] ); ?></small>
+									<br><small style="color:#888;"><?php echo esc_html( 'Slug : ' . $file['slug'] ); ?></small>
 									<div class="revaa-rename-form" style="display:none;margin-top:6px;">
 										<input type="text" class="revaa-rename-input" value="<?php echo esc_attr( $file['label'] ); ?>" style="width:220px;">
 										<button class="button button-small revaa-rename-save">Enregistrer</button>

@@ -30,6 +30,8 @@ zip -r "${ZIP_NAME}" "${PLUGIN_NAME}/" \
 	--exclude="*/package.json" \
 	--exclude="*/package-lock.json" \
 	--exclude="*/pdfjs-tmp*" \
+	--exclude="*/.claude/*" \
+	--exclude="*/AGENT*.md" \
 	--exclude="*/.DS_Store"
 
 echo ""
