@@ -38,7 +38,9 @@ yarn-error.log*
 dist/
 tmp/
 build/
+!assets/pdf.js/build/
 
 # PDF.js (téléchargé séparément, voir assets/pdf.js/INSTALL.md)
-assets/pdf.js/build/
+assets/pdf.js/build/*
+!assets/pdf.js/build/.htaccess
 !assets/pdf.js/INSTALL.md
