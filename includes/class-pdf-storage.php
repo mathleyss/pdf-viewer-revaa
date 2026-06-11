@@ -86,9 +86,21 @@ class REVAA_PDF_Storage {
 			return [ 'success' => false, 'error' => 'Le fichier doit être un PDF.' ];
 		}
 
-		$filename = sanitize_file_name( $file['name'] );
-		$slug     = pathinfo( $filename, PATHINFO_FILENAME );
-		$dest     = self::get_private_dir() . $filename;
+		$filename  = sanitize_file_name( $file['name'] );
+		$ext       = pathinfo( $filename, PATHINFO_EXTENSION );
+		$slug      = strtolower( pathinfo( $filename, PATHINFO_FILENAME ) );
+		$filename  = $slug . '.' . $ext;
+
+		// Gestion des collisions de casse
+		$base_slug = $slug;
+		$i         = 2;
+		while ( file_exists( self::get_private_dir() . $filename ) ) {
+			$slug     = $base_slug . '-' . $i;
+			$filename = $slug . '.' . $ext;
+			$i++;
+		}
+
+		$dest = self::get_private_dir() . $filename;
 
 		if ( ! move_uploaded_file( $file['tmp_name'], $dest ) ) {
 			return [ 'success' => false, 'error' => 'Déplacement du fichier impossible.' ];
