@@ -155,8 +155,8 @@ class REVAA_PDF_Block {
 
 	public static function add_admin_page() {
 		add_media_page(
-			'PDFs Protégés',
-			'PDFs Protégés',
+			'Documents REVAA',
+			'Documents REVAA',
 			'upload_files',
 			'revaa-pdf-admin',
 			[ __CLASS__, 'render_admin_page' ]
@@ -171,9 +171,9 @@ class REVAA_PDF_Block {
 		$nonce = wp_create_nonce( 'revaa_pdf_nonce' );
 		?>
 		<div class="wrap">
-			<h1>PDFs Protégés</h1>
+			<h1>Documents REVAA</h1>
 
-			<h2>Uploader un PDF</h2>
+			<h2>Téléverser un PDF</h2>
 			<form id="revaa-upload-form" enctype="multipart/form-data">
 				<div class="revaa-upload-field">
 					<label for="revaa-pdf-label">Nom du document</label>
@@ -185,7 +185,7 @@ class REVAA_PDF_Block {
 				</div>
 				<input type="hidden" name="nonce" value="<?php echo esc_attr( $nonce ); ?>">
 				<div class="revaa-upload-actions">
-					<button type="submit" class="button button-primary">Uploader</button>
+					<button type="submit" class="button button-primary">Téléverser</button>
 					<span id="revaa-upload-message"></span>
 				</div>
 			</form>
