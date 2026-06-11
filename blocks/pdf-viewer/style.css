@@ -20,7 +20,10 @@
   text-align: left;
 }
 
-.revaa-pdf-open-modal:hover {
+.revaa-pdf-open-modal:hover,
+.revaa-pdf-open-modal:focus {
+  background-color: #f8f9fa !important;
+  color: var(--color-text, #1e1e1e) !important;
   border-color: var(--color-primary, #0073aa);
   box-shadow: 0 4px 16px rgba(30, 77, 140, 0.14);
   transform: scale(1.01);
