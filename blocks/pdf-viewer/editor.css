@@ -53,7 +53,21 @@
 }
 
 .revaa-pdf-block-preview .revaa-pdf-open-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5em;
+	padding: 0.6em 1.2em;
+	background-color: #0073aa;
+	color: #fff !important;
+	border-radius: 4px;
+	font-size: 1rem;
+	text-decoration: none;
 	pointer-events: none;
+}
+
+.revaa-pdf-block-preview .revaa-pdf-open-btn .revaa-pdf-label,
+.revaa-pdf-block-preview .revaa-pdf-open-btn .revaa-pdf-icon {
+	color: #fff !important;
 }
 
 .revaa-pdf-upload-section button[disabled] {
